@@ -1,0 +1,82 @@
+name: Build Arch Linux GNOME ISO
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, codex/github-actions-iso]
+    paths:
+      - '.github/workflows/build-iso.yml'
+      - 'scripts/**'
+      - 'airootfs/**'
+      - 'efiboot/**'
+      - 'syslinux/**'
+      - 'packages.x86_64'
+      - 'pacman.conf'
+      - 'profiledef.sh'
+      - '.gitattributes'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-iso-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out profile
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Prepare build storage
+        shell: bash
+        run: |
+          # These are disposable runner SDKs; no repository or user data is removed.
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache
+          df -h "$RUNNER_TEMP"
+          available_kib=$(df --output=avail "$RUNNER_TEMP" | tail -1)
+          if (( available_kib < 25 * 1024 * 1024 )); then
+            echo 'At least 25 GiB of free build space is required.' >&2
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/archiso/out" "$RUNNER_TEMP/archiso/logs"
+
+      - name: Build and inspect ISO in Arch Linux
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -o pipefail
+          docker pull archlinux:base
+          docker image inspect archlinux:base --format '{{index .RepoDigests 0}}' \
+            > "$RUNNER_TEMP/archiso/logs/container-image.txt"
+          docker run --rm --privileged \
+            --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/profile,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/archiso,dst=/build" \
+            --env SOURCE_COMMIT \
+            archlinux:base bash /profile/scripts/build-iso.sh \
+            2>&1 | tee "$RUNNER_TEMP/archiso/logs/build.log"
+
+      - name: Upload ISO and SHA256 checksums
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: archlinux-gnome-noto-${{ github.run_number }}
+          path: |
+            ${{ runner.temp }}/archiso/out/*.iso
+            ${{ runner.temp }}/archiso/out/SHA256SUMS
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+      - name: Upload build logs and version manifest
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: archiso-build-logs-${{ github.run_number }}
+          path: ${{ runner.temp }}/archiso/logs/
+          if-no-files-found: warn
+          retention-days: 7

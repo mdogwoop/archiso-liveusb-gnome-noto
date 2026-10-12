@@ -4,13 +4,12 @@ arch-install-scripts
 archinstall
 b43-fwcutter
 base
-bind-tools
+bind
 brltty
-broadcom-wl
+broadcom-wl-dkms
 btrfs-progs
 clonezilla
 cloud-init
-crda
 cryptsetup
 darkhttpd
 ddrescue
@@ -47,6 +46,7 @@ lftp
 libfido2
 libusb-compat
 linux
+linux-headers # Required to build the Broadcom DKMS driver for the ISO kernel
 linux-atm
 linux-firmware
 livecd-sounds
@@ -58,6 +58,7 @@ man-pages
 mc
 mdadm
 memtest86+
+memtest86+-efi
 mkinitcpio
 mkinitcpio-archiso
 mkinitcpio-nfs-utils
@@ -70,6 +71,7 @@ nfs-utils
 nilfs-utils
 nmap
 ntfs-3g
+ntfsprogs
 nvme-cli
 openconnect
 openssh
@@ -130,7 +132,6 @@ xorg-drivers
 networkmanager
 gnome-text-editor
 eog
-nano
 xorg # VMSVGA support (Virtualbox, VMware)
 # CJK Support
 noto-fonts
