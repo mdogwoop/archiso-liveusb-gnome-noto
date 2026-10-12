@@ -3,6 +3,6 @@
 PRESETS=('archiso')
 
 ALL_kver='/boot/vmlinuz-linux'
-ALL_config='/etc/mkinitcpio.conf'
+# Leave ALL_config unset so /etc/mkinitcpio.conf.d/archiso.conf is loaded.
 
 archiso_image="/boot/initramfs-linux.img"
