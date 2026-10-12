@@ -9,7 +9,7 @@ mkdir -p "$out_dir" "$log_dir"
 
 # Refresh the keyring before the full rolling-release upgrade.
 pacman -Sy --needed --noconfirm archlinux-keyring
-pacman -Syu --needed --noconfirm archiso
+pacman -Syu --needed --noconfirm archiso mkinitcpio
 
 bash -n "$profile_dir/profiledef.sh"
 mapfile -t packages < <(sed 's/#.*//; /^[[:space:]]*$/d' "$profile_dir/packages.x86_64")
@@ -49,9 +49,12 @@ if grep -RE 'intel-ucode\.img|amd-ucode\.img|%ARCHISO_|%INSTALL_DIR%' \
     echo 'Stale boot configuration found in the ISO.' >&2
     exit 1
 fi
-bsdtar -tf "$inspect_dir/boot/initramfs-linux.img" \
+lsinitcpio -l "$inspect_dir/boot/initramfs-linux.img" \
     > "$log_dir/initramfs-contents.txt"
 grep -q 'kernel/x86/microcode/' "$log_dir/initramfs-contents.txt"
+grep -q '^hooks/archiso$' "$log_dir/initramfs-contents.txt"
+lsinitcpio -c "$inspect_dir/boot/initramfs-linux.img" \
+    > "$log_dir/initramfs-buildconfig.txt"
 
 (cd "$out_dir" && sha256sum -- *.iso > SHA256SUMS && sha256sum -c SHA256SUMS)
 du -h "$iso"
