@@ -12,7 +12,7 @@ pacman -Sy --needed --noconfirm archlinux-keyring
 pacman -Syu --needed --noconfirm archiso mkinitcpio
 
 bash -n "$profile_dir/profiledef.sh"
-mapfile -t packages < <(sed 's/#.*//; /^[[:space:]]*$/d' "$profile_dir/packages.x86_64")
+mapfile -t packages < <(sed 's/#.*//; s/^[[:space:]]*//; s/[[:space:]]*$//; /^$/d' "$profile_dir/packages.x86_64")
 # Resolve package names, providers and groups before constructing the rootfs.
 pacman -Sp --noconfirm --print-format '%n %v' "${packages[@]}" \
     > "$log_dir/resolved-packages.txt"
