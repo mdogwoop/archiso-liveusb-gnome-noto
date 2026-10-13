@@ -4,13 +4,12 @@ arch-install-scripts
 archinstall
 b43-fwcutter
 base
-bind-tools
+bind
 brltty
-broadcom-wl
+broadcom-wl-dkms
 btrfs-progs
 clonezilla
 cloud-init
-crda
 cryptsetup
 darkhttpd
 ddrescue
@@ -47,6 +46,8 @@ lftp
 libfido2
 libusb-compat
 linux
+# Required to build the Broadcom DKMS driver for the ISO kernel
+linux-headers
 linux-atm
 linux-firmware
 livecd-sounds
@@ -58,6 +59,7 @@ man-pages
 mc
 mdadm
 memtest86+
+memtest86+-efi
 mkinitcpio
 mkinitcpio-archiso
 mkinitcpio-nfs-utils
@@ -70,6 +72,7 @@ nfs-utils
 nilfs-utils
 nmap
 ntfs-3g
+ntfsprogs
 nvme-cli
 openconnect
 openssh
@@ -108,7 +111,7 @@ usbmuxd
 usbutils
 vim
 # Installing virtualbox-guest-utils with X11 support
-virtualbox-guest-utils #-nox
+virtualbox-guest-utils
 vpnc
 wireless-regdb
 wireless_tools
@@ -130,8 +133,8 @@ xorg-drivers
 networkmanager
 gnome-text-editor
 eog
-nano
-xorg # VMSVGA support (Virtualbox, VMware)
+# VMSVGA support (Virtualbox, VMware)
+xorg
 # CJK Support
 noto-fonts
 noto-fonts-cjk
