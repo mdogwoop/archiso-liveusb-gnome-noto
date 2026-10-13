@@ -46,7 +46,8 @@ lftp
 libfido2
 libusb-compat
 linux
-linux-headers # Required to build the Broadcom DKMS driver for the ISO kernel
+# Required to build the Broadcom DKMS driver for the ISO kernel
+linux-headers
 linux-atm
 linux-firmware
 livecd-sounds
@@ -110,7 +111,7 @@ usbmuxd
 usbutils
 vim
 # Installing virtualbox-guest-utils with X11 support
-virtualbox-guest-utils #-nox
+virtualbox-guest-utils
 vpnc
 wireless-regdb
 wireless_tools
@@ -132,7 +133,8 @@ xorg-drivers
 networkmanager
 gnome-text-editor
 eog
-xorg # VMSVGA support (Virtualbox, VMware)
+# VMSVGA support (Virtualbox, VMware)
+xorg
 # CJK Support
 noto-fonts
 noto-fonts-cjk
